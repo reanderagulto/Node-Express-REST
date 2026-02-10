@@ -141,6 +141,30 @@ Returns all posts from the database.
 }
 ```
 
+### Get Post by ID
+
+```http
+GET /posts/:id
+```
+
+Returns a single post by its ID.
+
+**Parameters**:
+
+- `id` (required): The unique identifier of the post
+
+**Response**:
+
+```json
+{
+  "data": {
+    "id": 1,
+    "title": "First Post",
+    "content": "This is the content of the first post"
+  }
+}
+```
+
 ### Create a New Post
 
 ```http
@@ -168,6 +192,93 @@ Creates a new post with the provided title and content.
     "title": "New Post",
     "content": "Content of the new post"
   }
+}
+```
+
+### Update Post (Full Update)
+
+```http
+PUT /posts/:id
+```
+
+Updates an existing post with the provided title and content. Requires both fields to be present.
+
+**Parameters**:
+
+- `id` (required): The unique identifier of the post
+
+**Request Body**:
+
+```json
+{
+  "title": "Updated Post Title",
+  "content": "Updated content of the post"
+}
+```
+
+**Response**:
+
+```json
+{
+  "message": "Post updated successfully.",
+  "data": {
+    "id": 1,
+    "title": "Updated Post Title",
+    "content": "Updated content of the post"
+  }
+}
+```
+
+### Update Post (Partial Update)
+
+```http
+PATCH /posts/:id
+```
+
+Updates an existing post with the provided fields. At least one field is required.
+
+**Parameters**:
+
+- `id` (required): The unique identifier of the post
+
+**Request Body** (at least one field required):
+
+```json
+{
+  "title": "Updated Post Title"
+}
+```
+
+**Response**:
+
+```json
+{
+  "message": "Post updated successfully.",
+  "data": {
+    "id": 1,
+    "title": "Updated Post Title",
+    "content": "This is the content of the first post"
+  }
+}
+```
+
+### Delete Post
+
+```http
+DELETE /posts/:id
+```
+
+Deletes a post by its ID.
+
+**Parameters**:
+
+- `id` (required): The unique identifier of the post
+
+**Response**:
+
+```json
+{
+  "message": "Post deleted successfully."
 }
 ```
 
