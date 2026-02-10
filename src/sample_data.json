@@ -1,0 +1,62 @@
+[
+  {
+    "title": "Introduction to REST APIs",
+    "content": "REST APIs allow different systems to communicate over HTTP using standard methods like GET and POST."
+  },
+  {
+    "title": "Understanding HTTP Methods",
+    "content": "HTTP methods define actions such as retrieving data, creating records, updating resources, and deleting them."
+  },
+  {
+    "title": "What is a GET Request",
+    "content": "A GET request is used to fetch data from a server without modifying the resource."
+  },
+  {
+    "title": "What is a POST Request",
+    "content": "A POST request sends data to the server to create a new resource."
+  },
+  {
+    "title": "API Status Codes",
+    "content": "Status codes like 200, 201, 400, and 500 indicate the result of an API request."
+  },
+  {
+    "title": "JSON as Data Format",
+    "content": "JSON is a lightweight data format commonly used in APIs for sending and receiving data."
+  },
+  {
+    "title": "Middleware in Express",
+    "content": "Middleware functions process requests before they reach the route handler."
+  },
+  {
+    "title": "Database Integration",
+    "content": "APIs often connect to databases to store and retrieve application data."
+  },
+  {
+    "title": "Authentication Basics",
+    "content": "Authentication ensures that only authorized users can access protected API endpoints."
+  },
+  {
+    "title": "Error Handling in APIs",
+    "content": "Proper error handling improves API reliability and helps developers debug issues."
+  },
+  {
+    "title": "Pagination in APIs",
+    "content": "Pagination limits the number of records returned in a single API response to improve performance."
+  },
+  {
+    "title": "Filtering and Sorting Data",
+    "content": "APIs can support query parameters to filter and sort data based on client needs."
+  },
+  {
+    "title": "Versioning REST APIs",
+    "content": "API versioning helps maintain backward compatibility when introducing changes."
+  },
+  {
+    "title": "Securing API Endpoints",
+    "content": "Security measures like HTTPS, tokens, and rate limiting protect APIs from abuse."
+  },
+  {
+    "title": "Testing REST APIs",
+    "content": "API testing ensures endpoints behave as expected under different scenarios."
+  }
+]
