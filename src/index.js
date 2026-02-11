@@ -11,11 +11,61 @@ app.use(express.json());
 // GET Method
 app.get("/posts", async (req, res) => {
   try {
-    const result = await pool.query("SELECT * FROM posts ORDER BY id ASC");
+				let {
+						page = 1,
+						limit = 10,
+						sort = "title",
+						order = "asc",
+						s = ""
+				} = req.query;
+
+				page = parseInt(page);
+				limit = parseInt(limit);
+				order = order.toLocaleLowerCase();
+
+				if(page < 1 || limit < 1) {
+						return res.status(400).json({
+								error: 'Page and Limit must be positive numbers'
+						});
+				}
+
+				if(!["asc", "desc"].includes(order)) {
+						return res.status(400).json({
+								error: "Order must be 'asc' or 'desc'"
+						});
+				}
+
+				let whereClause = "";
+
+				if(s) {
+						whereClause = `
+								WHERE title LIKE '%${s}%'
+								OR content LIKE '%${s}%'
+						`;
+				}
+				const offset = (page - 1) * limit;
+				const countQuery = await pool.query("SELECT COUNT(*) FROM posts");
+				const total = parseInt(countQuery.rowCount);
+
+    const result = await pool.query(`
+						SELECT * FROM posts
+      ${whereClause}
+						ORDER BY ${sort} ${order.toUpperCase()}
+						LIMIT $1 OFFSET $2`,
+						[limit, offset]
+				);
 
 				return res.status(200).json({
-      data: result.rows,
-    });
+						meta: {
+								total,
+								page,
+								limit,
+								totalPages: Math.ceil(total / limit),
+								sort,
+								order
+						},
+						data: result.rows
+				});
   } catch (err) {
 				return res.status(500).json({
       error: `Database error ${err.message}`,
