@@ -1,10 +1,11 @@
 <div align="center">
   <h1>🚀 Node.js Express REST API</h1>
-  <p>A modern, lightweight RESTful API built with Node.js, Express, and PostgreSQL</p>
+  <p>A modern, feature-rich RESTful API built with Node.js, Express, and PostgreSQL with Prisma ORM</p>
   <p>
     <a href="https://nodejs.org/"><img src="https://img.shields.io/badge/Node.js-v18+-green.svg" alt="Node.js"></a>
     <a href="https://expressjs.com/"><img src="https://img.shields.io/badge/Express-v5.2.1-blue.svg" alt="Express"></a>
     <a href="https://www.postgresql.org/"><img src="https://img.shields.io/badge/PostgreSQL-v15-blue.svg" alt="PostgreSQL"></a>
+    <a href="https://www.prisma.io/"><img src="https://img.shields.io/badge/Prisma-v7.4.0-blue.svg" alt="Prisma"></a>
     <a href="https://www.docker.com/"><img src="https://img.shields.io/badge/Docker-Ready-blue.svg" alt="Docker"></a>
     <a href="https://opensource.org/licenses/ISC"><img src="https://img.shields.io/badge/License-ISC-orange.svg" alt="License"></a>
   </p>
@@ -12,14 +13,19 @@
 
 ## ✨ Features
 
-- **📡 RESTful API Design**: Implements standard HTTP methods (GET, POST) for managing posts
+- **📡 RESTful API Design**: Implements standard HTTP methods (GET, POST, PUT, PATCH, DELETE) for managing posts
 - **🗄️ PostgreSQL Database**: Uses PostgreSQL for data persistence with connection pooling
 - **🔒 Environment Configuration**: Supports .env file for secure configuration
 - **🐳 Docker Support**: Containerized deployment with Docker and Docker Compose
 - **🔄 Auto-Reload Development**: Nodemon integration for automatic server restart
 - **🎯 Error Handling**: Comprehensive error handling with proper HTTP status codes
-- **✅ Data Validation**: Basic request body validation for POST requests
+- **✅ Data Validation**: Advanced request body validation and duplicate detection
 - **⚡ Fast & Lightweight**: Minimal dependencies for optimal performance
+- **📄 Prisma ORM**: Modern database access with Prisma ORM
+- **🔐 Security Features**: Helmet for security, bcryptjs for password hashing, JWT for authentication
+- **🌐 CORS Support**: Cross-Origin Resource Sharing enabled
+- **📊 Advanced Queries**: Pagination, sorting, and searching capabilities
+- **🏗️ MVC Architecture**: Organized into controllers, routes, middleware, and services
 
 ## 📁 Project Structure
 
