@@ -25,7 +25,7 @@
 
 ```
 ├── src/
-│   ├── index.js          # Express server and API routes 🏠
+│   ├── app.js          # Express server and API routes 🏠
 │   └── database.js       # PostgreSQL connection pool 🗄️
 ├── .env.example          # Example environment variables 📝
 ├── .gitignore            # Git ignore configuration 🚫
@@ -315,7 +315,7 @@ CREATE TABLE posts (
 
 ### Adding New Endpoints
 
-1. Open `src/index.js`
+1. Open `src/app.js`
 2. Add a new route handler
 3. Implement the desired functionality
 4. Test the endpoint using tools like Postman or curl

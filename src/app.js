@@ -1,6 +1,6 @@
 require("dotenv").config();
 const express = require("express");
-const pool = require("./database");
+const pool = require("./config/database");
 const result = require('pg/lib/query');
 
 const app = express();
