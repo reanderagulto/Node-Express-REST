@@ -31,15 +31,26 @@
 
 ```
 ├── src/
-│   ├── app.js          # Express server and API routes 🏠
-│   └── database.js       # PostgreSQL connection pool 🗄️
-├── .env.example          # Example environment variables 📝
-├── .gitignore            # Git ignore configuration 🚫
-├── docker-compose.yml    # Docker Compose configuration 🐳
-├── Dockerfile            # Docker image definition 🐋
-├── init.sql              # Database initialization script 📊
-├── package.json          # Project dependencies and scripts 📦
-└── package-lock.json     # Dependency lock file 🔒
+│   ├── app.ts                    # Express server entry point 🏠
+│   ├── config/
+│   │   └── database.ts           # Prisma client initialization 🗄️
+│   ├── controllers/
+│   │   └── post.controller.ts    # Post endpoints handler 🎯
+│   ├── routes/
+│   │   └── post.routes.ts        # Post API routes 🛣️
+│   ├── services/
+│   │   └── post.service.ts       # Post business logic and database operations 📦
+│   ├── middleware/              # Express middleware 🛡️
+│   └── generated/               # Prisma generated types 🔧
+├── prisma/
+│   └── schema.prisma            # Prisma schema definition 📋
+├── .env.example                 # Example environment variables 📝
+├── .gitignore                   # Git ignore configuration 🚫
+├── docker-compose.yml           # Docker Compose configuration 🐳
+├── Dockerfile                   # Docker image definition 🐋
+├── package.json                 # Project dependencies and scripts 📦
+├── tsconfig.json                # TypeScript configuration ⚙️
+└── package-lock.json            # Dependency lock file 🔒
 ```
 
 ## 🚀 Getting Started
@@ -75,18 +86,17 @@
 
    ```env
    PORT=3000
-   DB_HOST=localhost
-   DB_PORT=5432
-   DB_USER=postgres
-   DB_PASSWORD=your_password
-   DB_NAME=rest_api_db
+   DATABASE_URL="postgresql://postgres:your_password@localhost:5432/rest_api_db?schema=public"
    ```
 
-5. **Initialize the database**:
-   - Create a database with the name specified in `DB_NAME`
-   - Run the initialization script:
+5. **Initialize Prisma**:
+   - Generate the Prisma client:
      ```bash
-     psql -U your_username -d rest_api_db -f init.sql
+     npm run prisma:generate
+     ```
+   - Run migrations to create the database tables:
+     ```bash
+     npx prisma migrate dev --name init
      ```
 
 6. **Start the server**:
@@ -290,41 +300,167 @@ Deletes a post by its ID.
 
 ## 🗄️ Database Schema
 
-The application uses a single `posts` table with the following structure:
+The application uses Prisma ORM with a single `Post` model. The schema is defined in `prisma/schema.prisma`:
 
-```sql
-CREATE TABLE posts (
-  id SERIAL PRIMARY KEY,        -- Unique identifier
-  title VARCHAR(255) NOT NULL,  -- Post title
-  content TEXT NOT NULL         -- Post content
-);
+```prisma
+// prisma/schema.prisma
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model Post {
+  id        Int      @id @default(autoincrement())
+  title     String   @db.VarChar(255)
+  content   String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
 ```
 
 ## 🛠️ Technologies Used
 
-| Technology             | Version | Description                           |
-| ---------------------- | ------- | ------------------------------------- |
-| **Node.js**            | v18+    | JavaScript runtime environment        |
-| **Express**            | v5.2.1  | Web application framework for Node.js |
-| **PostgreSQL**         | v15     | Relational database management system |
-| **node-postgres (pg)** | v8.18.0 | PostgreSQL client for Node.js         |
-| **dotenv**             | v17.2.4 | Environment variable management       |
-| **nodemon**            | v3.1.11 | Development server auto-restart       |
-| **Docker**             | Latest  | Containerization platform             |
+| Technology     | Version | Description                           |
+| -------------- | ------- | ------------------------------------- |
+| **Node.js**    | v18+    | JavaScript runtime environment        |
+| **TypeScript** | v5.6.3  | Static type checking for JavaScript   |
+| **Express**    | v5.2.1  | Web application framework for Node.js |
+| **PostgreSQL** | v15     | Relational database management system |
+| **Prisma**     | v6.19.2 | Modern ORM for TypeScript/JavaScript  |
+| **dotenv**     | v17.2.4 | Environment variable management       |
+| **nodemon**    | v3.1.11 | Development server auto-restart       |
+| **ts-node**    | v10.9.2 | TypeScript execution for Node.js      |
+| **Docker**     | Latest  | Containerization platform             |
 
 ## 📝 Development
 
 ### Available Scripts
 
-- `npm start`: Starts the server in production mode 🚀
+- `npm run build`: Compiles TypeScript to JavaScript 📦
+- `npm start`: Starts the server in production mode (requires build first) 🚀
 - `npm run dev`: Starts the server in development mode with nodemon 🔄
+- `npm run prisma:generate`: Generates Prisma client types 🔧
 
 ### Adding New Endpoints
 
-1. Open `src/app.js`
-2. Add a new route handler
-3. Implement the desired functionality
-4. Test the endpoint using tools like Postman or curl
+#### Step 1: Create a Service (if needed)
+
+Create a new service file in `src/services/` to handle business logic and database operations:
+
+```typescript
+// src/services/example.service.ts
+import prisma from "../config/database";
+
+export interface ExampleData {
+  // Define your data structure
+}
+
+class ExampleService {
+  async getExamples() {
+    return await prisma.example.findMany();
+  }
+
+  async getExampleById(id: number) {
+    return await prisma.example.findUnique({
+      where: { id },
+    });
+  }
+
+  async createExample(data: ExampleData) {
+    return await prisma.example.create({
+      data,
+    });
+  }
+}
+
+export default new ExampleService();
+```
+
+#### Step 2: Create a Controller
+
+Create a new controller file in `src/controllers/` to handle HTTP requests/responses:
+
+```typescript
+// src/controllers/example.controller.ts
+import { Request, Response } from "express";
+import exampleService from "../services/example.service";
+
+class ExampleController {
+  async getExamples(req: Request, res: Response) {
+    try {
+      const examples = await exampleService.getExamples();
+      return res.status(200).json({ data: examples });
+    } catch (err) {
+      return res.status(500).json({ error: "Internal server error" });
+    }
+  }
+
+  async getExampleById(req: Request, res: Response) {
+    try {
+      const example = await exampleService.getExampleById(
+        parseInt(req.params.id as string),
+      );
+      if (!example) {
+        return res.status(404).json({ error: "Example not found" });
+      }
+      return res.status(200).json({ data: example });
+    } catch (err) {
+      return res.status(500).json({ error: "Internal server error" });
+    }
+  }
+
+  async createExample(req: Request, res: Response) {
+    try {
+      const example = await exampleService.createExample(req.body);
+      return res.status(201).json({
+        message: "Example created successfully",
+        data: example,
+      });
+    } catch (err) {
+      return res.status(500).json({ error: "Internal server error" });
+    }
+  }
+}
+
+export default new ExampleController();
+```
+
+#### Step 3: Create Routes
+
+Create a new routes file in `src/routes/` to define API endpoints:
+
+```typescript
+// src/routes/example.routes.ts
+import express from "express";
+import exampleController from "../controllers/example.controller";
+
+const router = express.Router();
+
+router.get("/", exampleController.getExamples);
+router.get("/:id", exampleController.getExampleById);
+router.post("/", exampleController.createExample);
+
+export default router;
+```
+
+#### Step 4: Register Routes in App.ts
+
+Add the new routes to `src/app.ts`:
+
+```typescript
+// src/app.ts
+import exampleRoutes from "./routes/example.routes";
+
+app.use("/examples", exampleRoutes);
+```
+
+#### Step 5: Test the Endpoint
+
+Test your new endpoints using tools like Postman or curl.
 
 ## 📄 License
 
