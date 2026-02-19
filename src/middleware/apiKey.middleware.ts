@@ -1,17 +1,30 @@
 import dotenv from "dotenv";
+import { validateApiKey } from "../services/apiKey.service";
 
 dotenv.config();
 
-export const apiKeyAuth = (req: any, res: any, next: any) => {
-  const apiKey = req.headers["x-api-key"];
+export const apiKeyAuth = async (req: any, res: any, next: any) => {
+  try {
+    const key = req.header("x-api-key");
 
-  if (!apiKey) {
-    return res.status(401).json({ error: "API Key is Missing" });
+    if (!key) {
+      return res.status(401).json({
+        message: "API Key is missing",
+      });
+    }
+
+    const apiKey = await validateApiKey(key);
+
+    if (!apiKey) {
+      return res.status(403).json({
+        message: "Invalid or inactive API Key",
+      });
+    }
+
+    req.apiKey = apiKey;
+
+    next();
+  } catch (error) {
+    next(error);
   }
-
-  if (apiKey !== process.env.API_KEY) {
-    return res.status(403).json({ error: "Invalid API Key" });
-  }
-
-  next();
 };

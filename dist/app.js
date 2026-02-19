@@ -11,8 +11,10 @@ const PORT = process.env.PORT || 3000;
 app.use(express_1.default.json());
 // Import routes
 const post_routes_1 = __importDefault(require("./routes/post.routes"));
+const apiKey_routes_1 = __importDefault(require("./routes/apiKey.routes"));
 // Use routes
 app.use("/posts", post_routes_1.default);
+app.use("/api-keys", apiKey_routes_1.default);
 app.listen(PORT, () => {
     console.log(`API running on http://localhost:${PORT}`);
 });

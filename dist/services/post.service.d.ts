@@ -36,7 +36,7 @@ declare class PostService {
             id: number;
             authorId: number | null;
             createdAt: Date;
-            updatedAt: Date;
+            updatedAt: Date | null;
         }[];
     }>;
     getPostById(id: number): Promise<{
@@ -45,7 +45,7 @@ declare class PostService {
         id: number;
         authorId: number | null;
         createdAt: Date;
-        updatedAt: Date;
+        updatedAt: Date | null;
     }>;
     createPost(data: CreatePostData): Promise<{
         title: string;
@@ -53,7 +53,7 @@ declare class PostService {
         id: number;
         authorId: number | null;
         createdAt: Date;
-        updatedAt: Date;
+        updatedAt: Date | null;
     }>;
     updatePost(id: number, data: UpdatePostData): Promise<{
         title: string;
@@ -61,7 +61,7 @@ declare class PostService {
         id: number;
         authorId: number | null;
         createdAt: Date;
-        updatedAt: Date;
+        updatedAt: Date | null;
     }>;
     patchPost(id: number, data: UpdatePostData): Promise<{
         title: string;
@@ -69,7 +69,7 @@ declare class PostService {
         id: number;
         authorId: number | null;
         createdAt: Date;
-        updatedAt: Date;
+        updatedAt: Date | null;
     }>;
     deletePost(id: number): Promise<void>;
 }

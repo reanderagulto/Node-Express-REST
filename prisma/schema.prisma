@@ -38,4 +38,10 @@ model Post {
   @@map("posts")
 }
 
-
+model ApiKey {
+  id        String   @id @default(uuid())
+  key       String   @unique
+  name      String
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+}
