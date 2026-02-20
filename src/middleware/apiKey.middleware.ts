@@ -1,7 +1,4 @@
-import dotenv from "dotenv";
 import { validateApiKey } from "../services/apiKey.service";
-
-dotenv.config();
 
 export const apiKeyAuth = async (req: any, res: any, next: any) => {
   try {
