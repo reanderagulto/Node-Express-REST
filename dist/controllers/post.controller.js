@@ -47,9 +47,15 @@ class PostController {
     }
     // POST Method - Create a new post
     async createPost(req, res) {
-        const { title, content } = req.body;
+        const { title, content, authorId } = req.body;
         try {
-            const post = await post_service_1.default.createPost({ title, content });
+            // Get authorId from authenticated user if not provided
+            const finalAuthorId = authorId || req.user?.id;
+            const post = await post_service_1.default.createPost({
+                title,
+                content,
+                authorId: finalAuthorId,
+            });
             return res.status(201).json({
                 message: "Post created successfully.",
                 data: post,
@@ -73,11 +79,12 @@ class PostController {
     // PUT Method - Update a post
     async updatePost(req, res) {
         const { id } = req.params;
-        const { title, content } = req.body;
+        const { title, content, authorId } = req.body;
         try {
             const updatedPost = await post_service_1.default.updatePost(parseInt(id), {
                 title,
                 content,
+                authorId,
             });
             return res.status(200).json({
                 message: "Post updated successfully.",
@@ -107,11 +114,12 @@ class PostController {
     // PATCH Method - Partially update a post
     async patchPost(req, res) {
         const { id } = req.params;
-        const { title, content } = req.body;
+        const { title, content, authorId } = req.body;
         try {
             const updatedPost = await post_service_1.default.patchPost(parseInt(id), {
                 title,
                 content,
+                authorId,
             });
             return res.status(200).json({
                 message: "Post updated successfully.",

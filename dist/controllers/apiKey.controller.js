@@ -4,6 +4,11 @@ exports.deleteApiKey = exports.updateApiKey = exports.getApiKey = exports.getApi
 const apiKey_service_1 = require("../services/apiKey.service");
 const createApiKey = async (req, res, next) => {
     try {
+        if (!req.body) {
+            return res.status(400).json({
+                message: "No Request Body",
+            });
+        }
         const { name } = req.body;
         if (!name) {
             return res.status(400).json({

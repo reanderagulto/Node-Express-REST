@@ -1,12 +1,7 @@
 "use strict";
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.apiKeyAuth = void 0;
-const dotenv_1 = __importDefault(require("dotenv"));
 const apiKey_service_1 = require("../services/apiKey.service");
-dotenv_1.default.config();
 const apiKeyAuth = async (req, res, next) => {
     try {
         const key = req.header("x-api-key");

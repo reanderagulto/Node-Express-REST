@@ -11,10 +11,14 @@ app.use(express.json());
 // Import routes
 import postRoutes from "./routes/post.routes";
 import apiKeyRoutes from "./routes/apiKey.routes";
+import userRoutes from "./routes/user.routes";
+import authRoutes from "./routes/auth.routes";
 
 // Use routes
 app.use("/posts", postRoutes);
 app.use("/api-keys", apiKeyRoutes);
+app.use("/users", userRoutes);
+app.use("/auth", authRoutes);
 
 app.listen(PORT, () => {
   console.log(`API running on http://localhost:${PORT}`);

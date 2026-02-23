@@ -17,3 +17,36 @@ export const createUser = (data: User) => {
     data,
   });
 };
+
+export const findUserById = (id: number) => {
+  return prisma.user.findUnique({
+    where: { id },
+  });
+};
+
+export const getAllUsers = () => {
+  return prisma.user.findMany({
+    select: {
+      id: true,
+      email: true,
+      name: true,
+      status: true,
+      verified_at: true,
+      createdAt: true,
+      updatedAt: true,
+    },
+  });
+};
+
+export const updateUser = (id: number, data: Partial<User>) => {
+  return prisma.user.update({
+    where: { id },
+    data,
+  });
+};
+
+export const deleteUser = (id: number) => {
+  return prisma.user.delete({
+    where: { id },
+  });
+};
