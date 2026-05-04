@@ -1,15 +1,25 @@
 import prisma from "../config/database";
+import { PostStatus } from "../generated/prisma";
 
 export interface CreatePostData {
   title: string;
   content: string;
   authorId?: number;
+  status?: PostStatus;
 }
 
 export interface UpdatePostData {
   title?: string;
   content?: string;
   authorId?: number;
+  status?: PostStatus;
+}
+
+export interface UpdatePostData {
+  title?: string;
+  content?: string;
+  authorId?: number;
+  status?: PostStatus;
 }
 
 export interface GetPostsQueryParams {

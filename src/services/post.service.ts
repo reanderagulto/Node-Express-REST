@@ -29,13 +29,11 @@ class PostService {
 
   // Create a new post
   async createPost(data: CreatePostData) {
-    const { title, content, authorId } = data;
-
-    if (!title || !content) {
+    if (!data.title || !data.content) {
       throw new Error("Title and content are required");
     }
 
-    const existingPost = await findPostByTitle(title);
+    const existingPost = await findPostByTitle(data.title);
     if (existingPost) {
       throw new Error("A post with this title already exists");
     }
@@ -45,13 +43,11 @@ class PostService {
 
   // Update a post
   async updatePost(id: number, data: UpdatePostData) {
-    const { title, content, authorId } = data;
-
-    if (!title || !content) {
+    if (!data.title) {
       throw new Error("Title and content are required");
     }
 
-    const existingPost = await findPostByTitle(title, id);
+    const existingPost = await findPostByTitle(data.title, id);
     if (existingPost) {
       throw new Error("A post with this title already exists");
     }
@@ -59,17 +55,15 @@ class PostService {
     return updatePost(id, data);
   }
 
-  // Partially update a post
+  // PATCH Method - Partially update a post
   async patchPost(id: number, data: UpdatePostData) {
-    const { title, content, authorId } = data;
-
-    if (!title && !content && authorId === undefined) {
+    if (!data.title && !data.content && data.authorId === undefined) {
       throw new Error("At least one field is required");
     }
 
     // Check for duplicate title if updating title
-    if (title) {
-      const existingPost = await findPostByTitle(title, id);
+    if (data.title) {
+      const existingPost = await findPostByTitle(data.title, id);
       if (existingPost) {
         throw new Error("A post with this title already exists");
       }
