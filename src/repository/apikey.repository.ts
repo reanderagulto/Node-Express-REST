@@ -6,10 +6,18 @@ export const findApiKey = (key: string) => {
   });
 };
 
+export const findApiKeyByHash = (keyHash: string) => {
+  return prisma.apiKey.findUnique({
+    where: { keyHash },
+  });
+};
+
 export const createApiKey = (data: {
   key: string;
+  keyHash: string;
   name: string;
   isActive?: boolean;
+  userId?: number;
 }) => {
   return prisma.apiKey.create({
     data,
@@ -23,6 +31,7 @@ export const getApiKeys = () => {
       name: true,
       isActive: true,
       createdAt: true,
+      lastUsedAt: true,
     },
   });
 };
@@ -30,16 +39,30 @@ export const getApiKeys = () => {
 export const getApiKeyById = (id: string) => {
   return prisma.apiKey.findUnique({
     where: { id },
+    select: {
+      id: true,
+      name: true,
+      isActive: true,
+      createdAt: true,
+      lastUsedAt: true,
+    },
   });
 };
 
 export const updateApiKey = (
   id: string,
-  data: { name?: string; isActive?: boolean },
+  data: { name?: string; isActive?: boolean; lastUsedAt?: Date },
 ) => {
   return prisma.apiKey.update({
     where: { id },
     data,
+    select: {
+      id: true,
+      name: true,
+      isActive: true,
+      createdAt: true,
+      lastUsedAt: true,
+    },
   });
 };
 

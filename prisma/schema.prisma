@@ -57,7 +57,13 @@ model Post {
 model ApiKey {
   id        String   @id @default(uuid())
   key       String   @unique
+  keyHash   String   @unique
   name      String
   isActive  Boolean  @default(true)
   createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  userId    Int?
+  lastUsedAt DateTime?
+
+  @@map("api_keys")
 }

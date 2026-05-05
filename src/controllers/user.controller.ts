@@ -5,6 +5,7 @@ import {
   updateUserDetails,
   deleteUserById,
 } from "../services/user.service";
+import logger from "../utils/logger";
 
 export const registerUser = async (req: any, res: any, next: any) => {
   try {
@@ -29,8 +30,12 @@ export const registerUser = async (req: any, res: any, next: any) => {
       data: user,
     });
   } catch (error: any) {
+    logger.warn("User registration error", { error: error.message });
     res.status(400).json({
-      message: error.message,
+      message:
+        process.env.NODE_ENV === "development"
+          ? error.message
+          : "Registration failed",
     });
   }
 };
@@ -43,8 +48,16 @@ export const getUsers = async (req: any, res: any, next: any) => {
       message: "Users retrieved successfully",
       data: users,
     });
-  } catch (error) {
-    next(error);
+  } catch (error: any) {
+    logger.error("Get users error", {
+      error: error.message,
+    });
+    res.status(500).json({
+      message:
+        process.env.NODE_ENV === "development"
+          ? error.message
+          : "Failed to retrieve users",
+    });
   }
 };
 
@@ -63,8 +76,16 @@ export const getUser = async (req: any, res: any, next: any) => {
       message: "User retrieved successfully",
       data: user,
     });
-  } catch (error) {
-    next(error);
+  } catch (error: any) {
+    logger.error("Get user error", {
+      error: error.message,
+    });
+    res.status(500).json({
+      message:
+        process.env.NODE_ENV === "development"
+          ? error.message
+          : "Failed to retrieve user",
+    });
   }
 };
 
@@ -73,19 +94,31 @@ export const updateUser = async (req: any, res: any, next: any) => {
     const { id } = req.params;
     const { email, name, password } = req.body;
 
+    if (!email && !name && !password) {
+      return res.status(400).json({
+        message: "At least one field (email, name, password) is required",
+      });
+    }
+
     const user = await updateUserDetails(parseInt(id), {
       email,
       name,
       password,
     });
 
+    logger.info("User updated", { userId: id });
+
     res.status(200).json({
       message: "User updated successfully",
       data: user,
     });
   } catch (error: any) {
+    logger.warn("User update error", { error: error.message });
     res.status(400).json({
-      message: error.message,
+      message:
+        process.env.NODE_ENV === "development"
+          ? error.message
+          : "Failed to update user",
     });
   }
 };
@@ -95,11 +128,21 @@ export const deleteUser = async (req: any, res: any, next: any) => {
     const { id } = req.params;
     await deleteUserById(parseInt(id));
 
+    logger.info("User deleted", { userId: id });
+
     res.status(200).json({
       message: "User deleted successfully",
     });
-  } catch (error) {
-    next(error);
+  } catch (error: any) {
+    logger.error("Delete user error", {
+      error: error.message,
+    });
+    res.status(500).json({
+      message:
+        process.env.NODE_ENV === "development"
+          ? error.message
+          : "Failed to delete user",
+    });
   }
 };
 

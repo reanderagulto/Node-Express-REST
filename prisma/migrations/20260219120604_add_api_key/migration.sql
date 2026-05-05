@@ -23,14 +23,15 @@ CREATE TABLE "posts" (
 );
 
 -- CreateTable
-CREATE TABLE "ApiKey" (
+CREATE TABLE "api_keys" (
     "id" TEXT NOT NULL,
     "key" TEXT NOT NULL,
     "name" TEXT NOT NULL,
     "isActive" BOOLEAN NOT NULL DEFAULT true,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
 
-    CONSTRAINT "ApiKey_pkey" PRIMARY KEY ("id")
+    CONSTRAINT "api_keys_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateIndex
@@ -40,7 +41,7 @@ CREATE UNIQUE INDEX "users_email_key" ON "users"("email");
 CREATE UNIQUE INDEX "posts_title_key" ON "posts"("title");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "ApiKey_key_key" ON "ApiKey"("key");
+CREATE UNIQUE INDEX "api_keys_key_key" ON "api_keys"("key");
 
 -- AddForeignKey
 ALTER TABLE "posts" ADD CONSTRAINT "posts_authorId_fkey" FOREIGN KEY ("authorId") REFERENCES "users"("id") ON DELETE SET NULL ON UPDATE CASCADE;

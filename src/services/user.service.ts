@@ -6,16 +6,18 @@ import {
   updateUser,
   deleteUser,
 } from "../repository/user.repository";
-import { validateEmail } from "../helpers/users.helpers";
-import bcrypt from "bcryptjs";
-
-export const validatePassword = (password: string) => {
-  return password.length >= 6;
-};
+import {
+  validateEmail,
+  validatePassword,
+  getPasswordError,
+  getEmailError,
+} from "../utils/validation";
+import bcryptjs from "bcryptjs";
+import logger from "../utils/logger";
 
 export const hashPassword = async (password: string) => {
-  const salt = await bcrypt.genSalt(10);
-  return bcrypt.hash(password, salt);
+  const salt = await bcryptjs.genSalt(10);
+  return bcryptjs.hash(password, salt);
 };
 
 export const createNewUser = async (
@@ -24,17 +26,24 @@ export const createNewUser = async (
   name: string,
 ) => {
   // Validate inputs
-  if (!validateEmail(email)) {
-    throw new Error("Invalid email format");
+  const emailError = getEmailError(email);
+  if (emailError) {
+    throw new Error(emailError);
   }
 
-  if (!validatePassword(password)) {
-    throw new Error("Password must be at least 6 characters long");
+  const passwordError = getPasswordError(password);
+  if (passwordError) {
+    throw new Error(passwordError);
+  }
+
+  if (!name || name.trim().length === 0) {
+    throw new Error("Name is required");
   }
 
   // Check if user already exists
   const existingUser = await findUserByEmail(email);
   if (existingUser) {
+    logger.warn("Registration attempt with existing email", { email });
     throw new Error("User with this email already exists");
   }
 
@@ -47,6 +56,8 @@ export const createNewUser = async (
     password: hashedPassword,
     name,
   });
+
+  logger.info("User registered successfully", { userId: user.id, email });
 
   // Omit password from returned user
   const { password: _, ...userWithoutPassword } = user;
@@ -70,21 +81,40 @@ export const updateUserDetails = async (
   data: { email?: string; name?: string; password?: string },
 ) => {
   if (data.password) {
-    if (!validatePassword(data.password)) {
-      throw new Error("Password must be at least 6 characters long");
+    const passwordError = getPasswordError(data.password);
+    if (passwordError) {
+      throw new Error(passwordError);
     }
     data.password = await hashPassword(data.password);
   }
 
-  if (data.email && !validateEmail(data.email)) {
-    throw new Error("Invalid email format");
+  if (data.email) {
+    const emailError = getEmailError(data.email);
+    if (emailError) {
+      throw new Error(emailError);
+    }
+
+    // Check if email is already in use by another user
+    const existingUser = await findUserByEmail(data.email);
+    if (existingUser && existingUser.id !== id) {
+      throw new Error("Email is already in use");
+    }
   }
 
-  const user = await updateUser(id, data);
-  const { password: _, ...userWithoutPassword } = user;
+  if (data.name && data.name.trim().length === 0) {
+    throw new Error("Name cannot be empty");
+  }
+
+  const updatedUser = await updateUser(id, data);
+
+  logger.info("User updated successfully", { userId: id });
+
+  // Omit password from returned user
+  const { password: _, ...userWithoutPassword } = updatedUser;
   return userWithoutPassword;
 };
 
 export const deleteUserById = async (id: number) => {
+  logger.info("User deleted", { userId: id });
   return deleteUser(id);
 };

@@ -1,11 +1,11 @@
 <div align="center">
   <h1>🚀 Node.js Express REST API</h1>
-  <p>A modern, feature-rich RESTful API built with Node.js, Express, and PostgreSQL with Prisma ORM</p>
+  <p>A modern, production-ready RESTful API built with Node.js, Express, and PostgreSQL with Prisma ORM</p>
   <p>
     <a href="https://nodejs.org/"><img src="https://img.shields.io/badge/Node.js-v18+-green.svg" alt="Node.js"></a>
     <a href="https://expressjs.com/"><img src="https://img.shields.io/badge/Express-v5.2.1-blue.svg" alt="Express"></a>
     <a href="https://www.postgresql.org/"><img src="https://img.shields.io/badge/PostgreSQL-v15-blue.svg" alt="PostgreSQL"></a>
-    <a href="https://www.prisma.io/"><img src="https://img.shields.io/badge/Prisma-v7.4.0-blue.svg" alt="Prisma"></a>
+    <a href="https://www.prisma.io/"><img src="https://img.shields.io/badge/Prisma-v6.19.2-blue.svg" alt="Prisma"></a>
     <a href="https://www.docker.com/"><img src="https://img.shields.io/badge/Docker-Ready-blue.svg" alt="Docker"></a>
     <a href="https://opensource.org/licenses/ISC"><img src="https://img.shields.io/badge/License-ISC-orange.svg" alt="License"></a>
   </p>
@@ -13,64 +13,135 @@
 
 ## ✨ Features
 
-- **📡 RESTful API Design**: Implements standard HTTP methods (GET, POST, PUT, PATCH, DELETE) for managing posts and API keys
+### Core Features
+
+- **📡 RESTful API Design**: Implements standard HTTP methods (GET, POST, PUT, PATCH, DELETE) for managing resources
 - **🗄️ PostgreSQL Database**: Uses PostgreSQL for data persistence with connection pooling
-- **🔒 Environment Configuration**: Supports .env file for secure configuration
+- **🌐 API Versioning**: Endpoints use `/api/v1/` prefix for better version management
+- **🔒 Environment Configuration**: Supports .env file for secure configuration management
 - **🐳 Docker Support**: Containerized deployment with Docker and Docker Compose
 - **🔄 Auto-Reload Development**: Nodemon integration for automatic server restart
-- **🎯 Error Handling**: Comprehensive error handling with proper HTTP status codes
-- **✅ Data Validation**: Advanced request body validation and duplicate detection
+- **🎯 Comprehensive Error Handling**: Proper HTTP status codes with environment-aware error messages
+- **✅ Advanced Data Validation**: Input validation with Zod and duplicate detection
 - **⚡ Fast & Lightweight**: Minimal dependencies for optimal performance
 - **📄 Prisma ORM**: Modern database access with Prisma ORM
-- **🔐 API Key Authentication**: Secure API access with API key authentication middleware
-- **🔒 Security Features**: Helmet for security, bcryptjs for password hashing, JWT for authentication
-- **🌐 CORS Support**: Cross-Origin Resource Sharing enabled
-- **📊 Advanced Queries**: Pagination, sorting, and searching capabilities
-- **🏗️ MVC Architecture**: Organized into controllers, routes, middleware, and services
+
+### Security Features (⭐ NEW)
+
+- **🔐 Helmet Security Headers**: Protection against clickjacking, MIME-type sniffing, and other attacks
+- **🔑 API Key Authentication**: Secure API access with hashed API keys stored in database
+- **🔒 JWT Authentication**: Secure user sessions with configurable token expiration
+- **🛡️ Rate Limiting**: Protection against brute force attacks on sensitive endpoints
+- **🔐 Password Hashing**: Strong password hashing with bcryptjs (10-round salting)
+- **🔐 API Key Hashing**: API keys are hashed with SHA-256 before storage for enhanced security
+- **✅ Strong Password Policy**: Minimum 12 characters, uppercase, lowercase, numbers, and special characters
+- **✅ Email Validation**: Comprehensive email format validation
+- **🌐 CORS Protection**: Configurable Cross-Origin Resource Sharing
+- **⚠️ Authorization Checks**: User ownership verification to prevent unauthorized access
+- **📊 Audit Logging**: Comprehensive logging of all operations with Winston
+- **🔍 Sensitive Error Handling**: Generic error messages in production, detailed in development
+- **📝 Request/Response Logging**: Automatic logging of all API requests with status codes and duration
+- **🔒 Request Size Limits**: Protection against DoS attacks via large payloads
+- **🛑 Graceful Shutdown**: Proper cleanup of database connections on server shutdown
 
 ## 📁 Project Structure
 
 ```
 ├── src/
-│   ├── app.ts                    # Express server entry point 🏠
+│   ├── app.ts                          # Express server entry point with security middleware 🏠
 │   ├── config/
-│   │   └── database.ts           # Prisma client initialization 🗄️
+│   │   └── database.ts                 # Prisma client initialization 🗄️
 │   ├── controllers/
-│   │   ├── post.controller.ts    # Post endpoints handler 🎯
-│   │   └── apiKey.controller.ts  # API key endpoints handler 🔑
+│   │   ├── post.controller.ts          # Post endpoints handler 🎯
+│   │   ├── apiKey.controller.ts        # API key endpoints handler 🔑
+│   │   ├── auth.controller.ts          # Authentication endpoints 🔐
+│   │   └── user.controller.ts          # User management endpoints 👤
 │   ├── routes/
-│   │   ├── post.routes.ts        # Post API routes 🛣️
-│   │   └── apiKey.routes.ts      # API key API routes 🔑
+│   │   ├── post.routes.ts              # Post API routes 🛣️
+│   │   ├── apiKey.routes.ts            # API key API routes 🔑
+│   │   ├── auth.routes.ts              # Auth routes 🔐
+│   │   └── user.routes.ts              # User routes 👤
 │   ├── services/
-│   │   ├── post.service.ts       # Post business logic and database operations 📦
-│   │   └── apiKey.service.ts     # API key business logic and validation 🔑
+│   │   ├── post.service.ts             # Post business logic and database operations 📦
+│   │   ├── apiKey.service.ts           # API key business logic with hashing 🔑
+│   │   ├── auth.service.ts             # Authentication service with JWT 🔐
+│   │   └── user.service.ts             # User service with validation and password hashing 👤
 │   ├── repository/
-│   │   └── apikey.repository.ts  # API key data access layer 🗄️
+│   │   ├── apikey.repository.ts        # API key data access layer 🗄️
+│   │   ├── auth.repository.ts          # Auth data access layer 🔐
+│   │   ├── post.repository.ts          # Post data access layer 📦
+│   │   └── user.repository.ts          # User data access layer 👤
 │   ├── middleware/
-│   │   └── apiKey.middleware.ts  # API key authentication middleware 🛡️
-│   ├── helpers/
-│   │   └── generate.apikey.ts    # API key generation utility 🔑
-│   └── generated/               # Prisma generated types 🔧
+│   │   ├── apiKey.middleware.ts        # API key authentication middleware with hashing verification 🛡️
+│   │   ├── auth.middleware.ts          # JWT authentication middleware 🔐
+│   │   └── auth.authorization.ts       # User ownership and authorization checks 🔐
+│   ├── utils/
+│   │   ├── logger.ts                   # Winston logging utility ✍️
+│   │   ├── validation.ts               # Zod-based validation schemas 📋
+│   │   ├── crypto.ts                   # Cryptographic utilities for API key hashing 🔐
+│   │   ├── env.validator.ts            # Environment variable validation 🔍
+│   │   └── generate.apikey.ts          # API key generation utility 🔑
+│   ├── types/
+│   │   └── express/
+│   │       └── index.d.ts              # Express type definitions 📝
+│   └── generated/                      # Prisma generated types 🔧
 ├── prisma/
-│   └── schema.prisma            # Prisma schema definition 📋
-├── .env.example                 # Example environment variables 📝
-├── .gitignore                   # Git ignore configuration 🚫
-├── docker-compose.yml           # Docker Compose configuration 🐳
-├── Dockerfile                   # Docker image definition 🐋
-├── package.json                 # Project dependencies and scripts 📦
-├── tsconfig.json                # TypeScript configuration ⚙️
-└── package-lock.json            # Dependency lock file 🔒
+│   └── schema.prisma                   # Prisma schema with updated API key model 📋
+│   └── migrations/                     # Database migrations 🗄️
+├── logs/                               # Application logs (created at runtime) 📝
+├── .env.example                        # Example environment variables 📝
+├── .gitignore                          # Git ignore configuration 🚫
+├── docker-compose.yml                  # Docker Compose configuration 🐳
+├── Dockerfile                          # Docker image definition 🐋
+├── package.json                        # Project dependencies and scripts 📦
+├── tsconfig.json                       # TypeScript configuration ⚙️
+└── README.md                           # This file 📖
 ```
+
+## 🔐 Security Improvements Implemented
+
+### Authentication & Authorization
+
+- ✅ **JWT Authentication**: Secure token-based user authentication with configurable expiration
+- ✅ **API Key Authentication**: Hashed API keys for machine-to-machine communication
+- ✅ **User Ownership Verification**: Authorization middleware prevents unauthorized access to user resources
+- ✅ **Strict Password Requirements**: Minimum 12 characters with uppercase, lowercase, number, and special character
+
+### API Security
+
+- ✅ **Helmet.js Integration**: Comprehensive HTTP security headers
+- ✅ **Rate Limiting**:
+  - 100 requests per 15 minutes for general endpoints
+  - 5 requests per 15 minutes for authentication endpoints
+- ✅ **CORS Protection**: Configurable allowed origins to prevent cross-origin attacks
+- ✅ **Request Size Limits**: Maximum 10KB payload to prevent DoS attacks
+- ✅ **API Versioning**: `/api/v1/` prefix for future compatibility
+
+### Data Security
+
+- ✅ **API Key Hashing**: Keys are hashed with SHA-256 before storage
+- ✅ **Password Hashing**: bcryptjs with 10-round salting
+- ✅ **Email Validation**: RFC 5322 compliant email validation
+- ✅ **Sensitive Data Filtering**: Passwords never returned in API responses
+
+### Operational Security
+
+- ✅ **Environment Validation**: Required environment variables checked at startup
+- ✅ **Secure Error Handling**: Production environment shows generic errors, development shows full details
+- ✅ **Audit Logging**: All operations logged with Winston for security analysis
+- ✅ **Request Logging**: Every request logged with HTTP method, path, status code, duration, and IP
+- ✅ **Graceful Shutdown**: Proper database connection cleanup on termination
+- ✅ **Health Check Endpoint**: `/health` endpoint for monitoring and load balancers
 
 ## 🚀 Getting Started
 
 ### Prerequisites
 
-- **Node.js** (v14 or higher) 🔹
+- **Node.js** (v18 or higher) 🔹
 - **PostgreSQL** (v12 or higher) 🐘
 - **Docker and Docker Compose** (optional, for containerized setup) 🐳
 
-### Local Development
+### Local Development Setup
 
 1. **Clone the repository**
 
@@ -94,9 +165,364 @@
 4. **Configure environment variables** in `.env`:
 
    ```env
+   # Database Configuration
+   DATABASE_URL="postgresql://postgres:password@localhost:5432/js_api_db?schema=public"
+
+   # Server Configuration
    PORT=3000
-   DATABASE_URL="postgresql://postgres:your_password@localhost:5432/rest_api_db?schema=public"
+   NODE_ENV=development
+
+   # JWT Configuration (MUST be at least 32 characters)
+   JWT_SECRET=your-super-secure-secret-key-must-be-at-least-32-characters-long
+   JWT_EXPIRATION=24h
+
+   # CORS Configuration
+   ALLOWED_ORIGINS=http://localhost:3000,http://localhost:3001
+
+   # Logging
+   LOG_LEVEL=info
    ```
+
+5. **Setup the database**:
+
+   ```bash
+   # Create the database and run migrations
+   npx prisma migrate dev --name init
+
+   # Generate Prisma client
+   npx prisma generate
+   ```
+
+6. **Start the development server**:
+
+   ```bash
+   npm run dev
+   ```
+
+   The API will be available at `http://localhost:3000`
+
+### Docker Setup
+
+1. **Build and start with Docker Compose**:
+
+   ```bash
+   docker-compose up --build
+   ```
+
+2. **Access the API**:
+
+   The API will be available at `http://localhost:3000`
+
+3. **View logs**:
+
+   ```bash
+   docker-compose logs -f api
+   ```
+
+4. **Stop containers**:
+
+   ```bash
+   docker-compose down
+   ```
+
+## 📚 API Endpoints
+
+All endpoints use the `/api/v1/` prefix.
+
+### Authentication
+
+- `POST /api/v1/auth/login` - User login (returns JWT token)
+
+### User Management
+
+- `POST /api/v1/users` - Register a new user
+- `GET /api/v1/users` - Get all users (requires JWT)
+- `GET /api/v1/users/:id` - Get a specific user (requires JWT)
+- `PUT /api/v1/users/:id` - Update a user (requires JWT + user ownership)
+- `DELETE /api/v1/users/:id` - Delete a user (requires JWT + user ownership)
+
+### Posts
+
+- `GET /api/v1/posts` - Get all posts (requires API key)
+- `GET /api/v1/posts/:id` - Get a specific post (requires API key)
+- `POST /api/v1/posts` - Create a new post (requires API key + JWT)
+- `PUT /api/v1/posts/:id` - Update a post (requires API key + JWT)
+- `PATCH /api/v1/posts/:id` - Partially update a post (requires API key + JWT)
+- `DELETE /api/v1/posts/:id` - Delete a post (requires API key + JWT)
+
+### API Keys
+
+- `POST /api/v1/api-keys` - Create a new API key (requires JWT)
+- `GET /api/v1/api-keys` - Get all API keys (requires API key)
+- `GET /api/v1/api-keys/:id` - Get a specific API key (requires API key)
+- `PUT /api/v1/api-keys/:id` - Update an API key (requires API key)
+- `DELETE /api/v1/api-keys/:id` - Delete an API key (requires API key)
+
+### Health Check
+
+- `GET /health` - Health check endpoint (no authentication required)
+
+## 🔑 Authentication
+
+### JWT Authentication
+
+1. **Register a user**:
+
+   ```bash
+   curl -X POST http://localhost:3000/api/v1/users \
+     -H "Content-Type: application/json" \
+     -d '{
+       "email": "user@example.com",
+       "password": "SecurePass123!",
+       "name": "John Doe"
+     }'
+   ```
+
+2. **Login to get JWT token**:
+
+   ```bash
+   curl -X POST http://localhost:3000/api/v1/auth/login \
+     -H "Content-Type: application/json" \
+     -d '{
+       "email": "user@example.com",
+       "password": "SecurePass123!"
+     }'
+   ```
+
+3. **Use JWT in requests**:
+
+   ```bash
+   curl -X GET http://localhost:3000/api/v1/users \
+     -H "Authorization: Bearer <your_jwt_token>"
+   ```
+
+### API Key Authentication
+
+1. **Create an API key** (requires JWT):
+
+   ```bash
+   curl -X POST http://localhost:3000/api/v1/api-keys \
+     -H "Content-Type: application/json" \
+     -H "Authorization: Bearer <your_jwt_token>" \
+     -d '{
+       "name": "My API Key"
+     }'
+   ```
+
+   **Important**: Store the returned API key securely. It will not be shown again!
+
+2. **Use API key in requests**:
+
+   ```bash
+   curl -X GET http://localhost:3000/api/v1/posts \
+     -H "x-api-key: <your_api_key>"
+   ```
+
+## 📝 Password Requirements
+
+Passwords must meet the following criteria:
+
+- ✅ Minimum 12 characters
+- ✅ At least one uppercase letter (A-Z)
+- ✅ At least one lowercase letter (a-z)
+- ✅ At least one number (0-9)
+- ✅ At least one special character (@$!%\*?&)
+
+Example: `MyPassword123!`
+
+## 📊 Logging
+
+The application uses Winston for structured logging. Logs are stored in the `logs/` directory:
+
+- **logs/combined.log** - All application logs
+- **logs/error.log** - Error logs only
+
+Log level can be configured via the `LOG_LEVEL` environment variable (default: `info`).
+
+### Log Levels
+
+- `error` - Error messages
+- `warn` - Warning messages
+- `info` - Information messages
+- `debug` - Debug messages
+
+## 🗄️ Database Migrations
+
+### Create a new migration after schema changes:
+
+```bash
+npx prisma migrate dev --name <migration_name>
+```
+
+### Apply pending migrations:
+
+```bash
+npx prisma migrate deploy
+```
+
+### View migration status:
+
+```bash
+npx prisma migrate status
+```
+
+### Reset the database (development only):
+
+```bash
+npx prisma migrate reset
+```
+
+## ⚙️ Configuration
+
+### Environment Variables
+
+| Variable          | Required | Default               | Description                            |
+| ----------------- | -------- | --------------------- | -------------------------------------- |
+| `DATABASE_URL`    | Yes      | -                     | PostgreSQL connection string           |
+| `PORT`            | No       | 3000                  | Server port                            |
+| `NODE_ENV`        | Yes      | -                     | Environment (development/production)   |
+| `JWT_SECRET`      | Yes      | -                     | JWT signing secret (min 32 characters) |
+| `JWT_EXPIRATION`  | No       | 24h                   | JWT token expiration time              |
+| `ALLOWED_ORIGINS` | No       | http://localhost:3000 | CORS allowed origins (comma-separated) |
+| `LOG_LEVEL`       | No       | info                  | Logging level                          |
+
+## 🐛 Troubleshooting
+
+### JWT_SECRET is too weak
+
+**Error**: `JWT_SECRET must be at least 32 characters long`
+
+**Solution**: Generate a strong secret:
+
+```bash
+node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"
+```
+
+### Database connection failed
+
+**Error**: `Error connecting to database`
+
+**Solution**:
+
+- Verify PostgreSQL is running
+- Check `DATABASE_URL` is correct
+- Ensure database exists: `createdb js_api_db`
+
+### Port already in use
+
+**Error**: `Error: listen EADDRINUSE: address already in use :::3000`
+
+**Solution**:
+
+```bash
+# Change port in .env
+PORT=3001
+
+# Or kill the process using port 3000 (Linux/Mac)
+lsof -ti:3000 | xargs kill -9
+```
+
+### Prisma client not found
+
+**Error**: `Cannot find module @prisma/client`
+
+**Solution**:
+
+```bash
+npx prisma generate
+npm install
+```
+
+## 📦 Dependencies
+
+### Production Dependencies
+
+- `@prisma/client` - Database ORM
+- `bcryptjs` - Password hashing
+- `cors` - Cross-origin resource sharing
+- `dotenv` - Environment variable management
+- `express` - Web framework
+- `express-rate-limit` - Rate limiting middleware
+- `helmet` - HTTP security headers
+- `jsonwebtoken` - JWT token management
+- `winston` - Logging
+- `zod` - Schema validation
+
+### Development Dependencies
+
+- `@types/*` - TypeScript type definitions
+- `nodemon` - Auto-reload development server
+- `ts-node` - TypeScript execution
+- `typescript` - TypeScript compiler
+
+## 🤝 Contributing
+
+Contributions are welcome! Please follow these guidelines:
+
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/AmazingFeature`)
+3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
+4. Push to the branch (`git push origin feature/AmazingFeature`)
+5. Open a Pull Request
+
+## 📋 Development Workflow
+
+### Build the project
+
+```bash
+npm run build
+```
+
+### Run in production
+
+```bash
+npm start
+```
+
+### Generate Prisma types
+
+```bash
+npm run prisma:generate
+```
+
+## 🔐 Security Best Practices
+
+1. **Never commit `.env` files** - Use `.env.example` template
+2. **Rotate API keys regularly** - Treat them like passwords
+3. **Use HTTPS in production** - Use a reverse proxy (Nginx, Apache)
+4. **Monitor logs** - Set up log aggregation and alerting
+5. **Keep dependencies updated** - Run `npm audit` regularly
+6. **Use strong secrets** - Generate random 32+ character secrets
+7. **Implement CORS carefully** - Only allow trusted origins
+8. **Enable HTTPS/TLS** - Encrypt data in transit
+
+## 📄 License
+
+This project is licensed under the ISC License - see the LICENSE file for details.
+
+## 🙋 Support
+
+For issues and questions:
+
+1. Check the [Troubleshooting](#-troubleshooting) section
+2. Check existing GitHub issues
+3. Create a new GitHub issue with detailed information
+
+## 🎯 Production Deployment Checklist
+
+- ✅ `NODE_ENV` set to `production`
+- ✅ `JWT_SECRET` set to a strong random value (32+ characters)
+- ✅ `DATABASE_URL` points to production database
+- ✅ HTTPS/TLS enabled
+- ✅ CORS origins restricted to your domain
+- ✅ Rate limiting appropriate for your scale
+- ✅ Monitoring and alerting configured
+- ✅ Log aggregation configured
+- ✅ Regular backups enabled
+- ✅ Security headers verified
+- ✅ All dependencies updated and audited
+- ✅ API keys rotated
+- ✅ Database backups tested
 
 5. **Initialize Prisma**:
    - Generate the Prisma client:
