@@ -12,6 +12,12 @@ import {
   getPasswordError,
   getEmailError,
 } from "../utils/validation";
+import {
+  delCache,
+  delCacheByPattern,
+  getCache,
+  setCache,
+} from "../config/cache";
 import bcryptjs from "bcryptjs";
 import logger from "../utils/logger";
 
@@ -59,8 +65,19 @@ export const createNewUser = async (
 
   logger.info("User registered successfully", { userId: user.id, email });
 
+  await delCacheByPattern("users:*");
+
   // Omit password from returned user
   const { password: _, ...userWithoutPassword } = user;
+  return userWithoutPassword;
+};
+
+const sanitizeUser = (user: any) => {
+  if (!user) {
+    return null;
+  }
+
+  const { password, ...userWithoutPassword } = user;
   return userWithoutPassword;
 };
 
@@ -69,11 +86,32 @@ export const getUserByEmail = async (email: string) => {
 };
 
 export const getUserById = async (id: number) => {
-  return findUserById(id);
+  const cacheKey = `user:${id}`;
+  const cached = await getCache(cacheKey);
+  if (cached) {
+    return cached;
+  }
+
+  const user = await findUserById(id);
+  const result = sanitizeUser(user);
+
+  if (result) {
+    await setCache(cacheKey, result, 120);
+  }
+
+  return result;
 };
 
 export const getUsers = async () => {
-  return getAllUsers();
+  const cacheKey = "users:all";
+  const cached = await getCache(cacheKey);
+  if (cached) {
+    return cached;
+  }
+
+  const users = await getAllUsers();
+  await setCache(cacheKey, users, 120);
+  return users;
 };
 
 export const updateUserDetails = async (
@@ -108,6 +146,8 @@ export const updateUserDetails = async (
   const updatedUser = await updateUser(id, data);
 
   logger.info("User updated successfully", { userId: id });
+  await delCacheByPattern("users:*");
+  await delCache(`user:${id}`);
 
   // Omit password from returned user
   const { password: _, ...userWithoutPassword } = updatedUser;
@@ -116,5 +156,7 @@ export const updateUserDetails = async (
 
 export const deleteUserById = async (id: number) => {
   logger.info("User deleted", { userId: id });
+  await delCacheByPattern("users:*");
+  await delCache(`user:${id}`);
   return deleteUser(id);
 };

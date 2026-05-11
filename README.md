@@ -20,6 +20,7 @@
 - **🌐 API Versioning**: Endpoints use `/api/v1/` prefix for better version management
 - **🔒 Environment Configuration**: Supports .env file for secure configuration management
 - **🐳 Docker Support**: Containerized deployment with Docker and Docker Compose
+- **⚡ Redis Caching**: Read-heavy endpoints are accelerated using Redis cache for posts and users
 - **🔄 Auto-Reload Development**: Nodemon integration for automatic server restart
 - **🎯 Comprehensive Error Handling**: Proper HTTP status codes with environment-aware error messages
 - **✅ Advanced Data Validation**: Input validation with Zod and duplicate detection
@@ -179,6 +180,9 @@
    # CORS Configuration
    ALLOWED_ORIGINS=http://localhost:3000,http://localhost:3001
 
+   # Redis Configuration
+   REDIS_URL=redis://localhost:6379
+
    # Logging
    LOG_LEVEL=info
    ```
@@ -208,6 +212,8 @@
    ```bash
    docker-compose up --build
    ```
+
+   This starts both PostgreSQL and Redis cache services alongside the API.
 
 2. **Access the API**:
 

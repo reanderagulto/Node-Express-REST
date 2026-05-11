@@ -60,19 +60,28 @@ class PostController {
     }
   }
 
-  // POST Method - Create a new post
+  // POST Method - Create a new post or multiple posts
   async createPost(req: any, res: Response) {
     const body = req.body;
     try {
-      // Get authorId from authenticated user if not provided
-      const data = body.authorId ? body : { ...body, authorId: req.user?.id };
+      const normalizeAuthorId = (item: any) =>
+        item.authorId ? item : { ...item, authorId: req.user?.id };
+
+      const data = Array.isArray(body)
+        ? body.map(normalizeAuthorId)
+        : normalizeAuthorId(body);
 
       const post = await postService.createPost(data);
 
-      logger.info("Post created", { postId: post.id, userId: req.user?.id });
+      logger.info("Post created", {
+        postCount: Array.isArray(post) ? post.length : 1,
+        userId: req.user?.id,
+      });
 
       return res.status(201).json({
-        message: "Post created successfully.",
+        message: Array.isArray(post)
+          ? "Posts created successfully."
+          : "Post created successfully.",
         data: post,
       });
     } catch (err) {

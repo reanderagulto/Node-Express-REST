@@ -1,7 +1,12 @@
 import logger from "./logger";
 
 export const validateEnvironment = () => {
-  const requiredEnvVars = ["DATABASE_URL", "JWT_SECRET", "NODE_ENV"];
+  const requiredEnvVars = [
+    "DATABASE_URL",
+    "JWT_SECRET",
+    "NODE_ENV",
+    "REDIS_URL",
+  ];
 
   const missingEnvVars = requiredEnvVars.filter(
     (envVar) => !process.env[envVar],

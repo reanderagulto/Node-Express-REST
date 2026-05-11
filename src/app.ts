@@ -6,6 +6,7 @@ import rateLimit from "express-rate-limit";
 import logger from "./utils/logger";
 import { validateEnvironment } from "./utils/env.validator";
 import prisma from "./config/database";
+import { connectRedis, disconnectRedis } from "./config/cache";
 
 dotenv.config();
 
@@ -105,29 +106,34 @@ app.use((req: Request, res: Response) => {
   res.status(404).json({ error: "Route not found" });
 });
 
-const server = app.listen(PORT, () => {
-  logger.info(`API running on http://localhost:${PORT}`, {
-    env: process.env.NODE_ENV || "development",
-  });
-});
+const startServer = async () => {
+  await connectRedis();
 
-// Graceful shutdown
-process.on("SIGTERM", async () => {
-  logger.info("SIGTERM received, shutting down gracefully");
-  server.close(async () => {
-    logger.info("HTTP server closed");
-    await prisma.$disconnect();
-    logger.info("Database connection closed");
-    process.exit(0);
+  const server = app.listen(PORT, () => {
+    logger.info(`API running on http://localhost:${PORT}`, {
+      env: process.env.NODE_ENV || "development",
+    });
   });
-});
 
-process.on("SIGINT", async () => {
-  logger.info("SIGINT received, shutting down gracefully");
-  server.close(async () => {
-    logger.info("HTTP server closed");
-    await prisma.$disconnect();
-    logger.info("Database connection closed");
-    process.exit(0);
+  const shutdown = async (signal: string) => {
+    logger.info(`${signal} received, shutting down gracefully`);
+    server.close(async () => {
+      logger.info("HTTP server closed");
+      await prisma.$disconnect();
+      logger.info("Database connection closed");
+      await disconnectRedis();
+      logger.info("Redis connection closed");
+      process.exit(0);
+    });
+  };
+
+  process.on("SIGTERM", () => shutdown("SIGTERM"));
+  process.on("SIGINT", () => shutdown("SIGINT"));
+};
+
+startServer().catch((error) => {
+  logger.error("Server startup failed", {
+    error: error instanceof Error ? error.message : "Unknown error",
   });
+  process.exit(1);
 });
